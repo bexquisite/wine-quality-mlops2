@@ -1,0 +1,34 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Run workflow when code is pushed to the 'main' branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu environment
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8  # Match your local Python version
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt  # Installs Flask, scikit-learn, pytest, etc.
+
+    - name: Run unit tests
+      run: |
+        cd wine-quality-mlops2  # Navigate into your project folder
+        pytest tests/test_model.py -v  # Run tests
+
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "Tests failed! Please fix before merging."
